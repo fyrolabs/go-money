@@ -2,6 +2,7 @@ package money
 
 import (
 	"bytes"
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -339,4 +340,22 @@ func (m *Money) Compare(om *Money) (int, error) {
 	}
 
 	return m.compare(om), nil
+}
+
+// GORM value / scanner interface
+func (m *Money) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("unable to get bytes to unmarshal money")
+	}
+
+	if err := m.UnmarshalJSON(bytes); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m Money) Value() (driver.Value, error) {
+	return m.MarshalJSON()
 }
