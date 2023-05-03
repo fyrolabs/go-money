@@ -359,3 +359,7 @@ func (m *Money) Scan(value interface{}) error {
 func (m Money) Value() (driver.Value, error) {
 	return m.MarshalJSON()
 }
+
+func (Money) GormDataType() string {
+	return "json"
+}
